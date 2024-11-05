@@ -1,1 +1,2 @@
-# Research_studio_code
+# This is a read me for our repository
+# READ CAREFULLY!!!
