@@ -62,9 +62,9 @@ inside_temp = float(input("Enter the inside temp: "))
 wall_population = []
 wall_options = [
     ['finishing', 'insulation', 'structure', 'finishing'],
-    #['finishing', 'insulation', 'finishing'],
-    ['glass'],
-    #['facade', 'insulation', 'finishing']
+    ['finishing', 'insulation', 'finishing'],
+    #['glass'],
+    ['facade', 'insulation', 'finishing']
 ]
 
 # Create unique walls
