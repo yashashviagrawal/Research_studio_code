@@ -46,7 +46,7 @@ def convert_csv_to_json(input_csv, output_json):
 
 # Example usage
 if __name__ == "__main__":
-    input_csv_path = "C:/Users/OWNER/Desktop/Research studio for yashashvi/wall_population_ds_sub30_0_heattransfer2.csv"
-    output_json_path = "C:/Users/OWNER/Desktop/Research studio for yashashvi/outputted.json"
+    input_csv_path = "datasets/wall_population.csv"
+    output_json_path = "datasets/outputted.json"
 
     convert_csv_to_json(input_csv_path, output_json_path)
