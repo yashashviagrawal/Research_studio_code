@@ -148,7 +148,7 @@ def dataframe_to_json(df):
 json_data = dataframe_to_json(wall_population_df)
 
 # Save JSON to a file
-with open('wall_population.json', 'w') as json_file:
+with open('datasets/wall_population.json', 'w') as json_file:
     json.dump(json_data, json_file, indent=4)
 
 print("DataFrame successfully converted to JSON file.")
