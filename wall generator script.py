@@ -15,6 +15,7 @@ materials_df['max_thickness'] = materials_df['max_thickness'].astype(float)
 materials_df['conductivity'] = materials_df['conductivity'].astype(float)
 materials_df['embodied_carbon_coefficient'] = materials_df['embodied_carbon_coefficient'].astype(float)
 materials_df['cost'] = materials_df['cost'].astype(float)
+materials_df['recyclability'] = materials_df['recyclability'].astype(int)
 
 # Function to create a wall with unique properties
 def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_temp, inside_temp):
@@ -27,8 +28,10 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         'total_u_value': 0,
         'total_embodied_carbon': 0,
         'heat_transfer': 0,
-        'total_cost': 0
+        'total_cost': 0,
+        'construction and demolition waste (cdw)': 0,
     }
+    preserved_masses = []
 
     for material_type in wall_type:
         filtered_materials = materials_df[materials_df['material type'] == material_type]
@@ -36,6 +39,17 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         material_thickness = round(random.uniform(selected_material['min_thickness'], selected_material['max_thickness']), 3)
         r_value = round(material_thickness / selected_material['conductivity'], 3)
         u_value = round(1 / r_value, 3)
+
+        material_mass = selected_material['density'] * material_thickness * total_wall_area
+        if selected_material['recyclability'] == 5:
+            preserved_mass = 1 * material_mass
+        elif selected_material['recyclability'] == 4:
+            preserved_mass = 0.75 * material_mass
+        elif selected_material['recyclability'] == 3:
+            preserved_mass = 0.5 * material_mass
+        else:
+            preserved_mass = 0 * material_mass
+        preserved_masses.append(preserved_mass)
 
         material_data = {
             'material': selected_material['material'],
@@ -45,7 +59,7 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
             'u_value': u_value,
             'embodied_carbon_coefficient': selected_material['embodied_carbon_coefficient'],
             'cost': selected_material['cost'],
-            'recyclability': selected_material['recyclability'],
+            'reciclability': selected_material['recyclability'],
             'bio_based': selected_material['bio_based'],
             'color': selected_material['colour']
         }
@@ -57,6 +71,9 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         wall['total_embodied_carbon'] = round(wall['total_embodied_carbon'] + material_thickness * total_wall_area * selected_material['density'] * selected_material['embodied_carbon_coefficient'], 3)
         wall['heat_transfer'] = round((outside_temp - inside_temp) / wall['total_r_value'], 3)
         wall['total_cost'] = round(wall['total_cost'] + selected_material['cost'] * total_wall_area, 3)
+    total_mass = sum([selected_material['density']* m['thickness'] * total_wall_area for m in wall['materials']])
+    preserved_mass_total = sum(preserved_masses)
+    wall['construction and demolition waste (cdw)'] = round((preserved_mass_total/total_mass)*100,2) if total_mass > 0 else 0
 
     return wall
 
