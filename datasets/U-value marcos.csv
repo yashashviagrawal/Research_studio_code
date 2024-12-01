@@ -3,7 +3,7 @@ Solid burnt clay brick,1920.0,0.012,0.012,0.98,0.012,structure,22.31,3,False,#b4
 Solid concrete block 25/50,2427.0,0.15,0.15,1.396,0.073,structure,16.49,2,False,#c0a6ab
 AAC block,642.0,0.75,0.15,0.184,0.3,structure,12.42,4,False,#f77549
 Reinforced concrete cement (RCC),2288.0,0.2,0.3,1.58,0.159,structure,49.36,2,False,#9b866f
-Profiled Clay Tile Pananel,1892.0,0.03,0.11,0.789,1.05,facade,54.65,3,False,#7a7975
+Profiled Clay Tile Panel,1892.0,0.03,0.11,0.789,1.05,facade,54.65,3,False,#7a7975
 Cement plaster,1762.0,0.01,0.015,0.721,0.63,finishing,10.73,2,False,#6d6d6c
 Gypsum plaster,1120.0,0.01,0.015,0.512,0.279,finishing,6.97,3,False,#6b6b6a
 Timber,480.0,0.018,0.035,0.072,0.72,finishing,21.71,5,True,#6f706e
