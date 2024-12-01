@@ -77,7 +77,7 @@ def populate_neo4j(conn, data):
 
 if __name__ == "__main__":
     # Path to your JSON file
-    file_path = r'C:\Users\OWNER\Desktop\Research studio for yashashvi\outputted.json'
+    file_path = r'datasets/outputted.json'
 
     # Load JSON data
     print("Loading data...")
