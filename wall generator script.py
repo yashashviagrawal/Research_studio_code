@@ -16,6 +16,9 @@ materials_df['conductivity'] = materials_df['conductivity'].astype(float)
 materials_df['embodied_carbon_coefficient'] = materials_df['embodied_carbon_coefficient'].astype(float)
 materials_df['cost'] = materials_df['cost'].astype(float)
 materials_df['recyclability'] = materials_df['recyclability'].astype(int)
+materials_df['bio_based'] = materials_df['bio_based'].astype(bool)
+materials_df['responsible'] = materials_df['responsible'].astype(bool)
+materials_df['preserved'] = materials_df['preserved'].astype(bool)
 
 # Function to create a wall with unique properties
 def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_temp, inside_temp):
@@ -30,11 +33,14 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         'heat_transfer': 0,
         'total_cost': 0,
         'construction_demolition_waste': 0,
-        'circular_economy': 0
+        'circular_economy': 0,
+        'heritage_preservation': 0
     }
     preserved_masses = []
     total_masses = []
     circular_masses = []
+    responsible_sourcing_values = []
+    preservation_values = []
 
     for material_type in wall_type:
         filtered_materials = materials_df[materials_df['material type'] == material_type]
@@ -70,6 +76,12 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
 
         circular_masses.append(circular_mass)
 
+        responsible_sourcing_value = 100 if selected_material['responsible'] else 0
+        responsible_sourcing_values.append(responsible_sourcing_value)
+
+        preservation_value = 100 if selected_material['preserved'] else 0
+        preservation_values.append(preservation_value)
+
         material_data = {
             'material': selected_material['material'],
             'thickness': material_thickness,
@@ -97,7 +109,8 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
 
     wall['construction_demolition_waste'] = round((preserved_mass_total / total_mass) * 100, 2) if total_mass > 0 else 0
     wall['circular_economy'] = round((circular_mass_total / total_mass) * 100, 2) if total_mass > 0 else 0
-
+    wall['responsible_material_sourcing'] = round(sum(responsible_sourcing_values)/len(responsible_sourcing_values),2) if responsible_sourcing_values else 0
+    wall['heritage_preservation'] = round(sum(preservation_values)/ len(preservation_values),2) if preservation_values else 0
     return wall
 
 # Get user inputs
