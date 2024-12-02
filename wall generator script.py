@@ -29,7 +29,8 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         'total_embodied_carbon': 0,
         'heat_transfer': 0,
         'total_cost': 0,
-        'construction and demolition waste (cdw)': 0,
+        'construction_demolition_waste': 0,
+        'circular_economy': 0
     }
     preserved_masses = []
     total_masses = []
@@ -43,14 +44,17 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         u_value = round(1 / r_value, 3)
 
         material_mass = selected_material['density'] * material_thickness * total_wall_area
+        total_masses.append(material_mass)
+
         if selected_material['recyclability'] == 5:
-            preserved_mass = 1 * material_mass
+            preserved_mass = material_mass
         elif selected_material['recyclability'] == 4:
             preserved_mass = 0.75 * material_mass
         elif selected_material['recyclability'] == 3:
             preserved_mass = 0.5 * material_mass
         else:
             preserved_mass = 0 * material_mass
+
         preserved_masses.append(preserved_mass)
 
         if selected_material['bio_based']:
@@ -63,6 +67,7 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
             circular_mass = 0.5 * material_mass
         else:
             circular_mass = 0
+
         circular_masses.append(circular_mass)
 
         material_data = {
@@ -90,8 +95,8 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
     preserved_mass_total = sum(preserved_masses)
     circular_mass_total = sum(circular_masses)
 
-    wall['cdw'] = round((preserved_mass_total / total_mass) * 100, 3) if total_mass > 0 else 0
-    wall['circular_economy'] = round((circular_mass_total / total_mass) * 100, 3) if total_mass > 0 else 0
+    wall['construction_demolition_waste'] = round((preserved_mass_total / total_mass) * 100, 2) if total_mass > 0 else 0
+    wall['circular_economy'] = round((circular_mass_total / total_mass) * 100, 2) if total_mass > 0 else 0
 
     return wall
 
@@ -122,18 +127,18 @@ wall_population_df = pd.DataFrame(wall_population)
 max_embodied_carbon = wall_population_df['total_embodied_carbon'].max()
 max_cost = wall_population_df['total_cost'].max()
 
-wall_population_df['embodied_ghg_emissions'] = wall_population_df['total_embodied_carbon'].apply(lambda x: round((1 - (x / max_embodied_carbon)) * 100, 3) if max_embodied_carbon > 0 else 0)
-wall_population_df['Affordable_adoption_high-quality_housing_conditions'] = wall_population_df['total_cost'].apply(lambda x: round((1 - (x / max_cost)) * 100, 3) if max_cost > 0 else 0)
+wall_population_df['embodied_ghg_emissions'] = wall_population_df['total_embodied_carbon'].apply(lambda x: round((1 - (x / max_embodied_carbon)) * 100, 2) if max_embodied_carbon > 0 else 0)
+wall_population_df['Affordable_adoption_high-quality_housing_conditions'] = wall_population_df['total_cost'].apply(lambda x: round((1 - (x / max_cost)) * 100, 2) if max_cost > 0 else 0)
 
 # Print the DataFrame
-print(wall_population_df.head().to_string())
+print(wall_population_df.head(20).to_string())
 
 # Save the DataFrame to a CSV file
 '''path = "datasets"
 wall_population_df.to_csv(os.path.join(path,r'wall_population.csv'), index=False)'''
 
 # Ensure the DataFrame columns are appropriately converted to native Python data types
-def convert_types(df):
+'''def convert_types(df):
     df['wall_id'] = df['wall_id'].astype(int)
     df['total_thickness'] = df['total_thickness'].astype(float)
     df['total_r_value'] = df['total_r_value'].astype(float)
@@ -193,4 +198,4 @@ json_data = dataframe_to_json(wall_population_df)
 with open('datasets/wall_population.json', 'w') as json_file:
     json.dump(json_data, json_file, indent=4)
 
-print("DataFrame successfully converted to JSON file.")
+print("DataFrame successfully converted to JSON file.")'''
