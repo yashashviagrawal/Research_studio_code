@@ -32,6 +32,8 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         'construction and demolition waste (cdw)': 0,
     }
     preserved_masses = []
+    total_masses = []
+    circular_masses = []
 
     for material_type in wall_type:
         filtered_materials = materials_df[materials_df['material type'] == material_type]
@@ -50,6 +52,18 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         else:
             preserved_mass = 0 * material_mass
         preserved_masses.append(preserved_mass)
+
+        if selected_material['bio_based']:
+            circular_mass = material_mass
+        elif selected_material['recyclability'] == 5:
+            circular_mass = material_mass
+        elif selected_material['recyclability'] == 4:
+            circular_mass = 0.75 * material_mass
+        elif selected_material['recyclability'] == 3:
+            circular_mass = 0.5 * material_mass
+        else:
+            circular_mass = 0
+        circular_masses.append(circular_mass)
 
         material_data = {
             'material': selected_material['material'],
@@ -71,9 +85,13 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
         wall['total_embodied_carbon'] = round(wall['total_embodied_carbon'] + material_thickness * total_wall_area * selected_material['density'] * selected_material['embodied_carbon_coefficient'], 3)
         wall['heat_transfer'] = round((outside_temp - inside_temp) / wall['total_r_value'], 3)
         wall['total_cost'] = round(wall['total_cost'] + selected_material['cost'] * total_wall_area, 3)
-    total_mass = sum([selected_material['density']* m['thickness'] * total_wall_area for m in wall['materials']])
+
+    total_mass = sum(total_masses)
     preserved_mass_total = sum(preserved_masses)
-    wall['construction and demolition waste (cdw)'] = round((preserved_mass_total/total_mass)*100,2) if total_mass > 0 else 0
+    circular_mass_total = sum(circular_masses)
+
+    wall['cdw'] = round((preserved_mass_total / total_mass) * 100, 3) if total_mass > 0 else 0
+    wall['circular_economy'] = round((circular_mass_total / total_mass) * 100, 3) if total_mass > 0 else 0
 
     return wall
 
@@ -99,6 +117,13 @@ while len(wall_population) < num_walls:
 
 # Create a DataFrame from the wall population
 wall_population_df = pd.DataFrame(wall_population)
+
+# Normalize 'total_embodied_carbon' and compute 'embodied_ghg_emissions' and 'Affordable_adoption_high-quality_housing_conditions'
+max_embodied_carbon = wall_population_df['total_embodied_carbon'].max()
+max_cost = wall_population_df['total_cost'].max()
+
+wall_population_df['embodied_ghg_emissions'] = wall_population_df['total_embodied_carbon'].apply(lambda x: round((1 - (x / max_embodied_carbon)) * 100, 3) if max_embodied_carbon > 0 else 0)
+wall_population_df['Affordable_adoption_high-quality_housing_conditions'] = wall_population_df['total_cost'].apply(lambda x: round((1 - (x / max_cost)) * 100, 3) if max_cost > 0 else 0)
 
 # Print the DataFrame
 print(wall_population_df.head().to_string())
