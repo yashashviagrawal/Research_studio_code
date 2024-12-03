@@ -90,7 +90,7 @@ def create_wall(wall_id, total_wall_area, wall_options, materials_df, outside_te
             'u_value': u_value,
             'embodied_carbon_coefficient': selected_material['embodied_carbon_coefficient'],
             'cost': selected_material['cost'],
-            'reciclability': selected_material['recyclability'],
+            'recyclability': selected_material['recyclability'],
             'bio_based': selected_material['bio_based'],
             'color': selected_material['colour']
         }
@@ -141,7 +141,7 @@ max_embodied_carbon = wall_population_df['total_embodied_carbon'].max()
 max_cost = wall_population_df['total_cost'].max()
 
 wall_population_df['embodied_ghg_emissions'] = wall_population_df['total_embodied_carbon'].apply(lambda x: round((1 - (x / max_embodied_carbon)) * 100, 2) if max_embodied_carbon > 0 else 0)
-wall_population_df['Affordable_adoption_high-quality_housing_conditions'] = wall_population_df['total_cost'].apply(lambda x: round((1 - (x / max_cost)) * 100, 2) if max_cost > 0 else 0)
+wall_population_df['affordable_adoption_high-quality_housing_conditions'] = wall_population_df['total_cost'].apply(lambda x: round((1 - (x / max_cost)) * 100, 2) if max_cost > 0 else 0)
 
 # Print the DataFrame
 print(wall_population_df.head(20).to_string())
@@ -151,7 +151,7 @@ print(wall_population_df.head(20).to_string())
 wall_population_df.to_csv(os.path.join(path,r'wall_population.csv'), index=False)'''
 
 # Ensure the DataFrame columns are appropriately converted to native Python data types
-'''def convert_types(df):
+def convert_types(df):
     df['wall_id'] = df['wall_id'].astype(int)
     df['total_thickness'] = df['total_thickness'].astype(float)
     df['total_r_value'] = df['total_r_value'].astype(float)
@@ -159,6 +159,12 @@ wall_population_df.to_csv(os.path.join(path,r'wall_population.csv'), index=False
     df['total_embodied_carbon'] = df['total_embodied_carbon'].astype(float)
     df['heat_transfer'] = df['heat_transfer'].astype(float)
     df['total_cost'] = df['total_cost'].astype(float)
+    df['construction_demolition_waste'] = df['construction_demolition_waste'].astype(float)
+    df['circular_economy'] = df['circular_economy'].astype(float)
+    df['heritage_preservation'] = df['heritage_preservation'].astype(float)
+    df['responsible_material_sourcing'] = df['responsible_material_sourcing'].astype(float)
+    df['embodied_ghg_emissions'] = df['embodied_ghg_emissions'].astype(float)
+    df['affordable_adoption_high-quality_housing_conditions'] = df['affordable_adoption_high-quality_housing_conditions'].astype(float)
     return df
 
 
@@ -197,7 +203,13 @@ def dataframe_to_json(df):
             "total_u_value": float(row['total_u_value']),
             "total_embodied_carbon": float(row['total_embodied_carbon']),
             "heat_transfer": float(row['heat_transfer']),
-            "total_cost": float(row['total_cost'])
+            "total_cost": float(row['total_cost']),
+            "construction_demolition_waste": float(row['construction_demolition_waste']),
+            "circular_economy": float(row['circular_economy']),
+            "heritage_preservation": float(row['heritage_preservation']),
+            "responsible_material_sourcing": float(row['responsible_material_sourcing']),
+            "embodied_ghg_emissions": float(row['embodied_ghg_emissions']),
+            "affordable_adoption_high-quality_housing_conditions": float(row['affordable_adoption_high-quality_housing_conditions'])
         }
         json_list.append(json_row)
 
@@ -211,4 +223,4 @@ json_data = dataframe_to_json(wall_population_df)
 with open('datasets/wall_population.json', 'w') as json_file:
     json.dump(json_data, json_file, indent=4)
 
-print("DataFrame successfully converted to JSON file.")'''
+print("DataFrame successfully converted to JSON file.")
